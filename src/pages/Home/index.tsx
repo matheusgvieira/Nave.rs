@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { ApplicationState } from '../../store';
@@ -25,6 +25,9 @@ interface HomeProps {
 const Home: React.FC<HomeProps> = ({ modalKey, toggleModal }) => {
     const history = useHistory();
 
+    const [openQuestion, setOpenQuestion] = useState<boolean>(false);
+    const [openModalDelete, setOpenModalDelete] = useState<boolean>(false);
+
     function handleAddNaver(){
         history.push('/adicionar-naver')
     }
@@ -33,11 +36,15 @@ const Home: React.FC<HomeProps> = ({ modalKey, toggleModal }) => {
         toggleModal(false);
     }
 
+    function handleCloseModalDelete() {
+        setOpenModalDelete(false);
+    }
+
 
     return (
         <div className="navers-container">
             {modalKey && (
-                <Modal>
+                <Modal type="naver" content={
                     <div className="info-naver">
                         <section className="img-naver">
                             <img src={naverImg} alt="Naver Imagem"/>
@@ -71,7 +78,34 @@ const Home: React.FC<HomeProps> = ({ modalKey, toggleModal }) => {
                             </div>
                         </section>
                     </div>
-                </Modal>
+                } />
+            )}
+            {openQuestion && (
+                <Modal type="question" content={
+                    <div className="modal-question">
+                        <div className="title-question">
+                            <h1>Excluir Naver</h1>
+                            <p>Tem certeza que deseja excluir esse Naver?</p>
+                        </div>
+                        <div className="answer">
+                            <button type="button">Cancelar</button>
+                            <button type="button">Excluir</button>
+                        </div>
+                    </div>
+                } />
+            )}
+            {openModalDelete && (
+                <Modal type="alert" content={
+                    <div className="modal-create">
+                        <div className="title-modal-create">
+                            <h1>Naver Excluído</h1>
+                            <img src={closeIcon} alt="Icone de Fechar modal" onClick={handleCloseModalDelete}/>
+                        </div>
+                        <div className="text">
+                            <p>Naver excluído com sucesso!</p>
+                        </div>
+                    </div>
+                } /> 
             )}
             <header>
                 <Header />

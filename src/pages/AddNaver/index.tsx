@@ -1,22 +1,36 @@
 import React, { useState, FormEvent } from 'react';
+import { connect } from 'react-redux';
+import { Dispatch } from 'redux';
+import { ApplicationState } from '../../store';
+import { toggle } from '../../store/ducks/modal/actions';
 import { useHistory } from 'react-router-dom';
 
 import Header from '../../components/Header';
 
 import backIcon from '../../assets/images/icons/back.svg';
+import closeIcon from '../../assets/images/icons/close.svg';
 
+
+import Modal from '../../components/Modal';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 
 import './styles.css';
 
-export default function AddNaver() {
+interface AddNaverProps {
+    modalKey: boolean;
+    toggleModal(modalkey: boolean): void;
+}
+
+const AddNaver: React.FC<AddNaverProps> = ({ modalKey, toggleModal }) => {
     const [name, setName] = useState<string>('');
     const [office, setOffice] = useState<string>('');
     const [idade, setIdade] = useState<number>();
     const [companyTime, setCompanyTime] = useState<string>('');
     const [projectsParticipated, setProjectsParticipated] = useState<string>('');
     const [avatar, setAvatar] = useState<string>('');
+    const [openModalCreate, setOpenModalCreate] = useState<boolean>(false);
+    const [openModalUpdate, setOpenModalUpdate] = useState<boolean>(false);
 
     const history = useHistory();
 
@@ -31,14 +45,45 @@ export default function AddNaver() {
             projectsParticipated,
             avatar,
         })
+        setOpenModalCreate(true);
     }
 
     function handleBackHome(){
         history.push('/home');
     }
 
+    function handleCloseModal() {
+        toggleModal(false);
+    }
+
     return (
         <div className="add-naver-container">
+            {openModalCreate && (
+                <Modal type="alert" content={
+                    <div className="modal-create">
+                        <div className="title-modal-create">
+                            <h1>Naver Criado</h1>
+                            <img src={closeIcon} alt="Icone de Fechar modal" onClick={handleCloseModal}/>
+                        </div>
+                        <div className="text">
+                            <p>Naver criado com sucesso!</p>
+                        </div>
+                    </div>
+                } /> 
+            )}
+            {openModalUpdate && (
+                <Modal type="alert" content={
+                    <div className="modal-create">
+                        <div className="title-modal-create">
+                            <h1>Naver Atualizado</h1>
+                            <img src={closeIcon} alt="Icone de Fechar modal" onClick={handleCloseModal}/>
+                        </div>
+                        <div className="text">
+                            <p>Naver criado com sucesso!</p>
+                        </div>
+                    </div>
+                } /> 
+            )}
             <header>
                 <Header />
             </header>
@@ -99,3 +144,18 @@ export default function AddNaver() {
         </div>
     )
 }
+
+const mapStateToProps = (state: ApplicationState) => ({
+    modalKey: state.modal.modalKey,
+  });
+  
+  const mapDispatchToProps = (dispatch: Dispatch) => {
+    return{
+        toggleModal(newState: boolean){
+            const action = toggle(newState);
+            dispatch(action);
+        }
+    }
+}
+  
+export default connect(mapStateToProps, mapDispatchToProps)(AddNaver);

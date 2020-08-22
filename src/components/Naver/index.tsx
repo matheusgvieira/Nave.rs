@@ -23,7 +23,7 @@ const Naver: React.FC<NaverProps> = ({ modalKey, toggleModal }) => {
     }
     return (
         <div className="naver-container">
-            <img src={naverImg} alt="Naver"/>
+            <img src={naverImg} alt="Naver" onClick={handleOpenModal}/>
             <div className="description">
                 <strong>Juliano Reis</strong>
                 <p>Front-end Developer</p>
@@ -33,7 +33,7 @@ const Naver: React.FC<NaverProps> = ({ modalKey, toggleModal }) => {
                     <img src={trashIcon} alt="Excluir"/>
                 </button>
                 <button type="button">
-                    <img src={editIcon} alt="Editar" onClick={handleOpenModal}/>
+                    <img src={editIcon} alt="Editar" />
                 </button>                
             </div>
         </div>

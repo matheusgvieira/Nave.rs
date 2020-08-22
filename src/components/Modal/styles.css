@@ -4,6 +4,7 @@
     background: rgba(64, 64, 64, 0.5);
     position: fixed;
     margin: 0 -3.2rem;
+    z-index: 5;
 }
 
 .modal-container button{
@@ -15,13 +16,30 @@
 
 .modal-container main{
     position:absolute;
-    float: center;
+    float: center;    
+    opacity:1;
+    background:white;
+}
+
+#alert{
+    width: 46vw ;
+    height: 22vh ;
+    top: 39vh ;
+    left: 27vw ;
+}
+
+#naver{
     top: 7.5vh;
     left: 11vw;
     width: 78vw;
     height: 82.7vh;
-    opacity:1;
-    background:white;
+}
+
+#question{
+    top: 32vh;
+    left: 27vw;
+    width: 46vw ;
+    height: 36vh;
 }
 
 .modal-container main .info-naver{

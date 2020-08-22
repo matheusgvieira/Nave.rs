@@ -10,19 +10,18 @@ import './styles.css';
 interface ModalProps {
     modalKey: boolean;
     toggleModal(modalkey: boolean): void;
+    type: string;
+    content: React.ReactNode;
 }
 
-const Modal: React.FC<ModalProps> = ({ toggleModal, children }) => {    
+const Modal: React.FC<ModalProps> = (props) => {    
 
-    function handleCloseModal() {
-        toggleModal(false);
-    }
-
+    
     return(
         <div className="modal-container">
             <div className="modal-child">
-                <main>
-                    {children}
+                <main  id={props.type}>
+                    {props.content}
                 </main>
             </div>
         </div>

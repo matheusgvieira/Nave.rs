@@ -53,3 +53,28 @@
 .add-naver-container .input-block{
     margin: 0;
 }
+
+.add-naver-container .modal-create{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 3.2rem;
+}
+
+.add-naver-container .title-modal-create{
+    display: flex;
+    justify-content: space-between;
+}
+
+.add-naver-container .title-modal-create h1{
+    font-size: 2.4rem;
+}
+
+.add-naver-container .title-modal-create img{
+    margin: -0.3rem -0.3rem 0 0;
+}
+
+
+.add-naver-container .text p{
+    margin-top: 2.4rem;
+}
