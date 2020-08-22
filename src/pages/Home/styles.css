@@ -1,0 +1,32 @@
+.navers-container{
+    width: 100vw;
+    height: 100vh;
+    padding: 0 3.2rem;
+}
+
+.navers-container .title{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 3rem;
+}
+
+.navers-container .title h1{
+    font: 700 4rem Montserrat;
+}
+
+.navers-container .button-add{
+    width: 17.6rem;
+    height: 4rem;
+}
+
+.navers-container .button-add button{
+    margin: 0;
+}
+
+.navers-container .navers{
+    margin-top: 2.4rem;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 6rem;
+}

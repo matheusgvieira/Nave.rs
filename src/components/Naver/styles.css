@@ -1,0 +1,23 @@
+.naver-container .description{
+    margin-top: 1.6rem;
+}
+
+.naver-container .description p{
+    margin-top: 0.4rem;
+}
+.naver-container .icons{
+    display: flex;
+    margin-top: 1.3rem;
+}
+
+.naver-container .icons button + button{
+    margin-left: 0.8rem;
+}
+
+.naver-container .icons button{
+    background: none;
+    border: none;   
+    width: 2rem;
+    margin: 0;
+}
+

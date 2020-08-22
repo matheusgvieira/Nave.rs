@@ -1,0 +1,21 @@
+.header-container{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 8.5rem;
+}
+
+.header-container img{
+    object-fit: contain;
+    height: 37px;
+}
+
+.header-container a{
+    text-decoration: none;
+}
+
+.header-container p{
+    color: #000;
+    font-weight: 600;
+    font-size: 1.4rem;
+}

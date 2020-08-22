@@ -1,0 +1,55 @@
+.add-naver-container{
+    width: 100vw;
+    height: 100vh;
+    padding: 0 3.2rem;    
+}
+
+.add-naver-container main{ 
+    margin-top: 4rem;
+    display: flex;
+    justify-content: center;
+}
+.add-naver-container .form-naver{   
+    width: 59.2rem;
+}
+
+.add-naver-container .title{
+    display: flex;
+    align-items: center;
+}
+
+.add-naver-container .title h1{
+    font-weight: 600;
+    color: var(--color-primary);
+    line-height: 3.6rem;
+    margin-left: 1.6rem;
+    font-size: 2.4rem;
+}
+.add-naver-container .title button{
+    background: none;
+    border: none;   
+    width: 2rem;
+    margin: 0;
+}
+
+.add-naver-container .input-field{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 3.2rem;
+}
+.add-naver-container form{
+    margin-top: 3.2rem;
+}
+.add-naver-container form .button-container{
+    width: 100%;
+    display: flex;
+    flex-direction: row-reverse;
+}
+.add-naver-container form button{
+    width: 17.6rem;
+    height: 4rem;
+}
+
+.add-naver-container .input-block{
+    margin: 0;
+}
