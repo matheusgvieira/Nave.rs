@@ -59,7 +59,8 @@
     margin: 1rem 0 2.4rem 0;
 }
 
-.modal-container main .info-naver .img-naver img{
+.modal-container main .info-naver .img-naver-modal img{
+    filter: grayscale(100%);
     width: 100%;
     object-fit: contain;
 }

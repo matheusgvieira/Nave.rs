@@ -1,7 +1,10 @@
 import React, { useState, FormEvent } from 'react';
+import { useHistory } from 'react-router-dom';
 
 import Input from '../../components/Input';
 import Button from '../../components/Button';
+
+import api from '../../services/api';
 
 import logoIcon from '../../assets/images/icons/logo.svg';
 
@@ -12,11 +15,23 @@ export default function Login() {
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
 
-    const handleSubmit = (e: FormEvent) => {
+    const history = useHistory();
+
+    const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         console.log({
+            email,
+            password,
+        })
+        
+       await api.post('/users/login', { 
             email, 
             password,
+        }).then((response) => {
+            localStorage.setItem('user', JSON.stringify(response.data));
+            history.push('/home');
+        }).catch((error) => {
+            alert('Email e senha inválidos');
         })
     }    
 
@@ -35,6 +50,7 @@ export default function Login() {
                         label="Senha" 
                         name="password" 
                         placeholder="Senha"
+                        type="password"
                         onChange={e => setPassword(e.target.value)} 
                     />
                     <Button value="Entrar" />

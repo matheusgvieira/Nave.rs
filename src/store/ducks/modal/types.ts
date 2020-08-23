@@ -8,5 +8,6 @@ export enum ModalType {
 
 export interface ModalState {
     modalKey: boolean;
+    id: string;
 }
   

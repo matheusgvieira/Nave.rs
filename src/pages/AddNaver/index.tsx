@@ -1,15 +1,17 @@
-import React, { useState, FormEvent } from 'react';
+import React, { useState, FormEvent, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
 import { ApplicationState } from '../../store';
-import { toggle } from '../../store/ducks/modal/actions';
+
 import { useHistory } from 'react-router-dom';
 
 import Header from '../../components/Header';
 
+import moment from 'moment';
+
 import backIcon from '../../assets/images/icons/back.svg';
 import closeIcon from '../../assets/images/icons/close.svg';
 
+import api from '../../services/api';
 
 import Modal from '../../components/Modal';
 import Input from '../../components/Input';
@@ -17,45 +19,97 @@ import Button from '../../components/Button';
 
 import './styles.css';
 
-interface AddNaverProps {
-    modalKey: boolean;
-    toggleModal(modalkey: boolean): void;
+interface User {
+    email: string;
+    password: string;
+    token: string;
 }
 
-const AddNaver: React.FC<AddNaverProps> = ({ modalKey, toggleModal }) => {
+interface AddNaverProps{
+    id: string;
+}
+
+interface UserNaver {
+    id: string;
+    job_role: string;
+    admission_date: Date;
+    birthdate: Date;
+    project: string;
+    name: string;
+    url: string;
+}
+
+const AddNaver: React.FC<AddNaverProps> = ({ id }) => {
     const [name, setName] = useState<string>('');
     const [office, setOffice] = useState<string>('');
-    const [idade, setIdade] = useState<number>();
-    const [companyTime, setCompanyTime] = useState<string>('');
+    const [idade, setIdade] = useState<number>(0);
+    const [companyTime, setCompanyTime] = useState<number>(0);
     const [projectsParticipated, setProjectsParticipated] = useState<string>('');
     const [avatar, setAvatar] = useState<string>('');
     const [openModalCreate, setOpenModalCreate] = useState<boolean>(false);
     const [openModalUpdate, setOpenModalUpdate] = useState<boolean>(false);
-
+    const user:User = JSON.parse(localStorage.getItem('user')!); 
+    const [userNavers, setUserNavers] = useState<UserNaver[]>([]);
+    
     const history = useHistory();
 
-    function createNaver(e: FormEvent){
-        e.preventDefault();
-
-        console.log({
-            name,
-            office,
-            idade,
-            companyTime,
-            projectsParticipated,
-            avatar,
+    useEffect(() => {
+        api.get('/navers', {
+            headers: { Authorization: `Bearer ${user.token}` }
         })
-        setOpenModalCreate(true);
+        .then((response) => {
+            setUserNavers(response.data)
+          })
+        .catch((error) => {
+            console.error(error);
+        })
+    }, []);
+    
+    async function createNaver(e: FormEvent){
+        e.preventDefault();
+            const config = {
+            headers: { Authorization: `Bearer ${user.token}` }
+        };
+        const admission_date = moment().format('DD/MM') +  '/' + (parseInt(moment().format('YYYY')) - companyTime);
+        const birthdate = moment().format('DD/MM') +  '/' + (parseInt(moment().format('YYYY')) - idade);        
+        console.log({
+            admission_date,
+            birthdate,
+        })
+        
+        await api.post('/navers', {
+            job_role: office,
+            admission_date,
+            birthdate,
+            project: projectsParticipated,
+            name,
+            url: avatar,
+        }, config).then(() => {
+            setOpenModalCreate(true);
+        }).catch((error) =>{
+            alert('Erro ao criar o usuário');
+        });
     }
-
+    
     function handleBackHome(){
         history.push('/home');
     }
 
     function handleCloseModal() {
-        toggleModal(false);
+        setOpenModalCreate(false);
+        history.push('/adicionar-naver');
     }
 
+    const userCurrent = id  !== '' ? userNavers.find((object: UserNaver) => object.id === id) : null;
+
+    const oldCurrent = userCurrent?.admission_date !== undefined ?
+                moment().year() - parseInt((userCurrent?.birthdate)?.toString().split('-')[0]) 
+                : 0;
+
+    const companyTimeCurrent = userCurrent?.admission_date !== undefined ?
+                moment().year() - parseInt((userCurrent.admission_date)?.toString().split('-')[0]) 
+                : 0;
+    
     return (
         <div className="add-naver-container">
             {openModalCreate && (
@@ -103,30 +157,35 @@ const AddNaver: React.FC<AddNaverProps> = ({ modalKey, toggleModal }) => {
                                 name="name" 
                                 placeholder="Nome"
                                 onChange={e => setName(e.target.value)} 
+                                defaultValue={userCurrent?.name}
                             />
                             <Input 
                                 label="Cargo" 
                                 name="office" 
                                 placeholder="Cargo"
-                                onChange={e => setOffice(e.target.value)} 
+                                onChange={e => setOffice(e.target.value)}
+                                defaultValue={userCurrent?.job_role} 
                             />
                             <Input 
                                 label="Idade" 
                                 name="old" 
                                 placeholder="Idade"
-                                onChange={e => setIdade(+e.target.value)} 
+                                onChange={e => setIdade(+e.target.value)}
+                                defaultValue={oldCurrent === 0 ? '' : oldCurrent}  
                             />
                             <Input 
                                 label="Tempo de Empresa" 
                                 name="company-time" 
                                 placeholder="Tempo de Empresa"
-                                onChange={e => setCompanyTime(e.target.value)} 
+                                onChange={e => setCompanyTime(+e.target.value)}
+                                defaultValue={companyTimeCurrent === 0 ? '' : companyTimeCurrent} 
                             />
                             <Input 
                                 label="Projetos que participou" 
                                 name="projects-participated" 
                                 placeholder="Projetos que participou"
-                                onChange={e => setProjectsParticipated(e.target.value)} 
+                                onChange={e => setProjectsParticipated(e.target.value)}
+                                defaultValue={userCurrent?.project} 
                             />
                             <Input 
                                 label="URL da foto do naver" 
@@ -146,16 +205,8 @@ const AddNaver: React.FC<AddNaverProps> = ({ modalKey, toggleModal }) => {
 }
 
 const mapStateToProps = (state: ApplicationState) => ({
-    modalKey: state.modal.modalKey,
-  });
+    id: state.modal.id,
+});
+
   
-  const mapDispatchToProps = (dispatch: Dispatch) => {
-    return{
-        toggleModal(newState: boolean){
-            const action = toggle(newState);
-            dispatch(action);
-        }
-    }
-}
-  
-export default connect(mapStateToProps, mapDispatchToProps)(AddNaver);
+export default connect(mapStateToProps)(AddNaver);

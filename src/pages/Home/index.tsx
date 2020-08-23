@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { ApplicationState } from '../../store';
@@ -10,56 +10,104 @@ import Button from '../../components/Button';
 import Naver from '../../components/Naver';
 import Modal from '../../components/Modal';
 
-import naverImg from '../../assets/images/naver.png';
 import trashIcon from '../../assets/images/icons/trash.svg';
 import editIcon from '../../assets/images/icons/edit.svg';
 import closeIcon from '../../assets/images/icons/close.svg';
+
+import api from '../../services/api';
+import moment from 'moment';
 
 import './styles.css';
 
 interface HomeProps {
     modalKey: boolean;
-    toggleModal(modalkey: boolean): void;
+    id: string;
+    toggleModal(modalkey: boolean, id: string): void;
 }
 
-const Home: React.FC<HomeProps> = ({ modalKey, toggleModal }) => {
+interface User {
+    email: string;
+    password: string;
+    token: string;
+}
+
+interface UserNaver {
+    id: string;
+    job_role: string;
+    admission_date: Date;
+    birthdate: Date;
+    project: string;
+    name: string;
+    url: string;
+}
+
+const Home: React.FC<HomeProps> = ({ modalKey, toggleModal, id }) => {
     const history = useHistory();
 
     const [openQuestion, setOpenQuestion] = useState<boolean>(false);
+    const [userNavers, setUserNavers] = useState<UserNaver[]>([]);
     const [openModalDelete, setOpenModalDelete] = useState<boolean>(false);
+    const user:User = JSON.parse(localStorage.getItem('user')!); 
 
+    useEffect(() => {
+        api.get('/navers', {
+            headers: { Authorization: `Bearer ${user.token}` }
+        })
+        .then((response) => {
+            setUserNavers(response.data)
+          })
+        .catch((error) => {
+            console.error(error);
+        })
+    }, [openModalDelete]);
+
+    
     function handleAddNaver(){
+        toggleModal(false,'');
         history.push('/adicionar-naver')
     }
 
+    function handleDeleteNaver(){
+
+    }
+
     function handleCloseModal() {
-        toggleModal(false);
+        toggleModal(false,'');
     }
 
     function handleCloseModalDelete() {
         setOpenModalDelete(false);
     }
+    
+    const userClicked = userNavers.find((object: UserNaver) => object.id === id);
 
+    const old = userClicked?.admission_date !== undefined ?
+                moment().year() - parseInt((userClicked?.birthdate)?.toString().split('-')[0]) 
+                : 0;
+
+    const companyTime = userClicked?.admission_date !== undefined ?
+                moment().year() - parseInt((userClicked.admission_date)?.toString().split('-')[0]) 
+                : 0;
 
     return (
         <div className="navers-container">
             {modalKey && (
                 <Modal type="naver" content={
                     <div className="info-naver">
-                        <section className="img-naver">
-                            <img src={naverImg} alt="Naver Imagem"/>
+                        <section className="img-naver-modal">
+                            <img src={userClicked?.url} alt="Naver Imagem"/>
                         </section>
                         <section className="description-naver">
                             <div className="txt-button">
                                 <div className="description-txt">
-                                    <h1>Juliano Reis</h1>
-                                    <p>Front-end Developer</p>
+                                    <h1>{userClicked?.name}</h1>
+                                    <p>{userClicked?.job_role}</p>
                                     <strong>Idade</strong>
-                                    <p>Lorem Ipsum</p>
+                                    <p>{old} {old > 1 ? 'anos' : 'ano'}</p>
                                     <strong>Tempo de Empresa</strong>
-                                    <p>Lorem Ipsum</p>
+                                    <p>{companyTime} {companyTime > 1 ? 'anos' : 'ano'} de Nave.rs</p>
                                     <strong>Projetos que participou</strong>
-                                    <p>Lorem Ipsum</p>
+                                    <p>{userClicked?.project}</p>
                                 </div>
                                 <div className="close-button">
                                     <button type="button">
@@ -70,7 +118,7 @@ const Home: React.FC<HomeProps> = ({ modalKey, toggleModal }) => {
 
                             <div className="icons">
                                 <button type="button">
-                                    <img src={trashIcon} alt="Excluir"/>
+                                    <img src={trashIcon} alt="Excluir" onClick={handleDeleteNaver}/>
                                 </button>
                                 <button type="button">
                                     <img src={editIcon} alt="Editar" />
@@ -119,10 +167,15 @@ const Home: React.FC<HomeProps> = ({ modalKey, toggleModal }) => {
                     </div>
                 </div>
                 <div className="navers">
-                    <Naver />
-                    <Naver />
-                    <Naver />
-                    <Naver />
+                    {userNavers.map( 
+                        (userNaver: UserNaver) => (
+                            <Naver 
+                                key={userNaver.id} 
+                                UserNaver={userNaver} 
+                                setModalDelete={setOpenModalDelete}
+                            />
+                        )
+                    )}
                 </div>
             </main>            
         </div>
@@ -131,12 +184,13 @@ const Home: React.FC<HomeProps> = ({ modalKey, toggleModal }) => {
 
 const mapStateToProps = (state: ApplicationState) => ({
     modalKey: state.modal.modalKey,
-  });
-  
-  const mapDispatchToProps = (dispatch: Dispatch) => {
+    id: state.modal.id,
+});
+
+const mapDispatchToProps = (dispatch: Dispatch) => {
     return{
-        toggleModal(newState: boolean){
-            const action = toggle(newState);
+        toggleModal(newState: boolean, newId: string){
+            const action = toggle(newState, newId);
             dispatch(action);
         }
     }

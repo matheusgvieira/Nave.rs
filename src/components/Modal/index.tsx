@@ -9,7 +9,8 @@ import './styles.css';
 
 interface ModalProps {
     modalKey: boolean;
-    toggleModal(modalkey: boolean): void;
+    id: string;
+    toggleModal(modalkey: boolean, id: string): void;
     type: string;
     content: React.ReactNode;
 }
@@ -30,15 +31,16 @@ const Modal: React.FC<ModalProps> = (props) => {
 
 const mapStateToProps = (state: ApplicationState) => ({
     modalKey: state.modal.modalKey,
+    id: state.modal.id,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => {
     return{
-        toggleModal(newState: boolean){
-            const action = toggle(newState);
+        toggleModal(newState: boolean, newId: string){
+            const action = toggle(newState, newId);
             dispatch(action);
         }
     }
 }
   
-export default connect(mapStateToProps, mapDispatchToProps)(Modal);
+export default connect(mapStateToProps,mapDispatchToProps)(Modal);

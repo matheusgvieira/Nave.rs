@@ -5,35 +5,78 @@ import { Dispatch } from 'redux';
 import { ApplicationState } from '../../store';
 import { toggle } from '../../store/ducks/modal/actions';
 
-import naverImg from '../../assets/images/naver.png';
 import trashIcon from '../../assets/images/icons/trash.svg';
 import editIcon from '../../assets/images/icons/edit.svg';
 
 import './styles.css';
+import api from '../../services/api';
+import { useHistory } from 'react-router-dom';
+
+interface UserNaver {
+    id: string;
+    job_role: string;
+    admission_date: Date;
+    birthdate: Date;
+    project: string;
+    name: string;
+    url: string;
+}
 
 interface NaverProps{
     modalKey: boolean;
-    toggleModal(modalkey: boolean): void;
+    id: string;
+    toggleModal(modalkey: boolean, id: string): void;
+    UserNaver: UserNaver;
+    setModalDelete(open: boolean): void;
 }
 
-const Naver: React.FC<NaverProps> = ({ modalKey, toggleModal }) => { 
-    
+interface User {
+    email: string;
+    password: string;
+    token: string;
+}
+
+const Naver: React.FC<NaverProps> = ({ modalKey, toggleModal, setModalDelete, UserNaver }) => { 
+
+    const user:User = JSON.parse(localStorage.getItem('user')!);
+    const history = useHistory(); 
+
     function handleOpenModal(){
-        toggleModal(true);
+        toggleModal(true, UserNaver.id);
     }
+
+    function handleEditNaver(){
+        toggleModal(false, UserNaver.id);
+        history.push('/adicionar-naver');
+    }
+
+    function handleDeleteNaver(){
+        api.delete(`/navers/${UserNaver.id}`, {
+            headers: { Authorization: `Bearer ${user.token}` }
+        })
+        .then(() => {
+            setModalDelete(true);
+        })
+        .catch(() => {
+            alert('Erro ao deletar o Naver');
+        })
+    }
+
     return (
         <div className="naver-container">
-            <img src={naverImg} alt="Naver" onClick={handleOpenModal}/>
+            <div className="img-naver">
+                <img src={UserNaver.url} alt="Naver" onClick={handleOpenModal}/>
+            </div>
             <div className="description">
-                <strong>Juliano Reis</strong>
-                <p>Front-end Developer</p>
+                <strong>{UserNaver.name}</strong>
+                <p>{UserNaver.job_role}</p>
             </div>
             <div className="icons">
                 <button type="button">
-                    <img src={trashIcon} alt="Excluir"/>
+                    <img src={trashIcon} alt="Excluir" onClick={handleDeleteNaver} />
                 </button>
                 <button type="button">
-                    <img src={editIcon} alt="Editar" />
+                    <img src={editIcon} alt="Editar" onClick={handleEditNaver} />
                 </button>                
             </div>
         </div>
@@ -43,12 +86,13 @@ const Naver: React.FC<NaverProps> = ({ modalKey, toggleModal }) => {
 
 const mapStateToProps = (state: ApplicationState) => ({
     modalKey: state.modal.modalKey,
-  });
-  
+    id: state.modal.id,
+});
+
 const mapDispatchToProps = (dispatch: Dispatch) => {
     return{
-        toggleModal(newState: boolean){
-            const action = toggle(newState);
+        toggleModal(newState: boolean, newId: string){
+            const action = toggle(newState, newId);
             dispatch(action);
         }
     }
