@@ -25,11 +25,8 @@
     margin-left: 1.6rem;
     font-size: 2.4rem;
 }
-.add-naver-container .title button{
-    background: none;
-    border: none;   
-    width: 2rem;
-    margin: 0;
+.add-naver-container .title img{
+    cursor: pointer;
 }
 
 .add-naver-container .input-field{

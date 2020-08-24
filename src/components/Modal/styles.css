@@ -75,8 +75,9 @@
     margin-left: 0.8rem;
 }
 
-.txt-button button{
+.txt-button .close-button img{
     margin-top: -2rem;
+    cursor: pointer;
 }
 
 .info-naver .description-naver{

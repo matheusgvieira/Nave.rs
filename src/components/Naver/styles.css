@@ -14,7 +14,11 @@
     margin-top: 1.3rem;
 }
 
-.naver-container .icons button + button{
+.naver-container .icons img{
+    cursor: pointer;
+}
+
+.naver-container .icons img + img{
     margin-left: 0.8rem;
 }
 

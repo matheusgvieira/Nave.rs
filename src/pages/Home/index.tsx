@@ -19,16 +19,16 @@ import moment from 'moment';
 
 import './styles.css';
 
-interface HomeProps {
-    modalKey: boolean;
-    id: string;
-    toggleModal(modalkey: boolean, id: string): void;
-}
 
 interface User {
     email: string;
     password: string;
     token: string;
+}
+
+interface Question{
+    modal: boolean;
+    userId: string;
 }
 
 interface UserNaver {
@@ -41,10 +41,17 @@ interface UserNaver {
     url: string;
 }
 
-const Home: React.FC<HomeProps> = ({ modalKey, toggleModal, id }) => {
+interface HomeProps {
+    modalKey: boolean;
+    id: string;
+    toggleModal(modalkey: boolean, id: string): void;
+    UserNaver: UserNaver;
+}
+
+const Home: React.FC<HomeProps> = ({ modalKey, toggleModal, id, UserNaver }) => {
     const history = useHistory();
 
-    const [openQuestion, setOpenQuestion] = useState<boolean>(false);
+    const [openQuestion, setOpenQuestion] = useState<Question>({ userId: '', modal: false });
     const [userNavers, setUserNavers] = useState<UserNaver[]>([]);
     const [openModalDelete, setOpenModalDelete] = useState<boolean>(false);
     const user:User = JSON.parse(localStorage.getItem('user')!); 
@@ -69,17 +76,44 @@ const Home: React.FC<HomeProps> = ({ modalKey, toggleModal, id }) => {
 
     function handleDeleteNaver(){
 
+        setOpenQuestion({ modal: false, userId: openQuestion.userId });
+        
+        api.delete(`/navers/${openQuestion.userId}`, {
+            headers: { Authorization: `Bearer ${user.token}` }
+        })
+        .then(() => {
+            setOpenModalDelete(true);
+        })
+        .catch(() => {
+            alert('Erro ao deletar o Naver');
+        })
     }
 
     function handleCloseModal() {
         toggleModal(false,'');
     }
-
+    
     function handleCloseModalDelete() {
         setOpenModalDelete(false);
+        setOpenQuestion({ modal: false, userId: ''});
     }
+
     
     const userClicked = userNavers.find((object: UserNaver) => object.id === id);
+
+    function handleModalDeleteNaver(){
+        if(userClicked?.id){
+            toggleModal(false, userClicked?.id);
+            setOpenQuestion({ modal: true, userId: userClicked?.id});  
+        }      
+    }
+
+    function handleEditNaver(){
+        if(userClicked?.id){
+            toggleModal(false, userClicked?.id);
+            history.push('/adicionar-naver');
+        }
+    }
 
     const old = userClicked?.admission_date !== undefined ?
                 moment().year() - parseInt((userClicked?.birthdate)?.toString().split('-')[0]) 
@@ -110,25 +144,23 @@ const Home: React.FC<HomeProps> = ({ modalKey, toggleModal, id }) => {
                                     <p>{userClicked?.project}</p>
                                 </div>
                                 <div className="close-button">
-                                    <button type="button">
-                                        <img src={closeIcon} alt="Fechar" onClick={handleCloseModal} />
-                                    </button>
+                                    <img src={closeIcon} alt="Fechar" onClick={handleCloseModal} />
                                 </div>
                             </div>
 
                             <div className="icons">
                                 <button type="button">
-                                    <img src={trashIcon} alt="Excluir" onClick={handleDeleteNaver}/>
+                                    <img src={trashIcon} alt="Excluir" onClick={handleModalDeleteNaver}/>
                                 </button>
                                 <button type="button">
-                                    <img src={editIcon} alt="Editar" />
+                                    <img src={editIcon} alt="Editar" onClick={handleEditNaver} />
                                 </button>                
                             </div>
                         </section>
                     </div>
                 } />
             )}
-            {openQuestion && (
+            {openQuestion.modal && (
                 <Modal type="question" content={
                     <div className="modal-question">
                         <div className="title-question">
@@ -136,8 +168,8 @@ const Home: React.FC<HomeProps> = ({ modalKey, toggleModal, id }) => {
                             <p>Tem certeza que deseja excluir esse Naver?</p>
                         </div>
                         <div className="answer">
-                            <button type="button">Cancelar</button>
-                            <button type="button">Excluir</button>
+                            <button type="button" onClick={handleCloseModalDelete}>Cancelar</button>
+                            <button type="button" onClick={handleDeleteNaver}>Excluir</button>
                         </div>
                     </div>
                 } />
@@ -172,7 +204,7 @@ const Home: React.FC<HomeProps> = ({ modalKey, toggleModal, id }) => {
                             <Naver 
                                 key={userNaver.id} 
                                 UserNaver={userNaver} 
-                                setModalDelete={setOpenModalDelete}
+                                setModalQuestion={setOpenQuestion}
                             />
                         )
                     )}

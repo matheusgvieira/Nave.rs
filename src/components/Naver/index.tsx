@@ -22,13 +22,11 @@ interface UserNaver {
     url: string;
 }
 
-interface NaverProps{
-    modalKey: boolean;
-    id: string;
-    toggleModal(modalkey: boolean, id: string): void;
-    UserNaver: UserNaver;
-    setModalDelete(open: boolean): void;
+interface Question{
+    modal: boolean;
+    userId: string;
 }
+
 
 interface User {
     email: string;
@@ -36,7 +34,20 @@ interface User {
     token: string;
 }
 
-const Naver: React.FC<NaverProps> = ({ modalKey, toggleModal, setModalDelete, UserNaver }) => { 
+interface NaverProps{
+    modalKey: boolean;
+    id: string;
+    toggleModal(modalkey: boolean, id: string): void;
+    UserNaver: UserNaver;
+    setModalQuestion(Question: Question): void;
+}
+
+const Naver: React.FC<NaverProps> = ({ 
+    modalKey, 
+    toggleModal, 
+    UserNaver,
+    setModalQuestion,
+ }) => { 
 
     const user:User = JSON.parse(localStorage.getItem('user')!);
     const history = useHistory(); 
@@ -51,15 +62,7 @@ const Naver: React.FC<NaverProps> = ({ modalKey, toggleModal, setModalDelete, Us
     }
 
     function handleDeleteNaver(){
-        api.delete(`/navers/${UserNaver.id}`, {
-            headers: { Authorization: `Bearer ${user.token}` }
-        })
-        .then(() => {
-            setModalDelete(true);
-        })
-        .catch(() => {
-            alert('Erro ao deletar o Naver');
-        })
+        setModalQuestion({ modal: true, userId: UserNaver.id});        
     }
 
     return (
@@ -72,12 +75,8 @@ const Naver: React.FC<NaverProps> = ({ modalKey, toggleModal, setModalDelete, Us
                 <p>{UserNaver.job_role}</p>
             </div>
             <div className="icons">
-                <button type="button">
-                    <img src={trashIcon} alt="Excluir" onClick={handleDeleteNaver} />
-                </button>
-                <button type="button">
-                    <img src={editIcon} alt="Editar" onClick={handleEditNaver} />
-                </button>                
+                <img src={trashIcon} alt="Excluir" onClick={handleDeleteNaver} />
+                <img src={editIcon} alt="Editar" onClick={handleEditNaver} />
             </div>
         </div>
     )

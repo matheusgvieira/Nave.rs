@@ -67,28 +67,40 @@ const AddNaver: React.FC<AddNaverProps> = ({ id }) => {
     
     async function createNaver(e: FormEvent){
         e.preventDefault();
-            const config = {
+        const config = {
             headers: { Authorization: `Bearer ${user.token}` }
         };
         const admission_date = moment().format('DD/MM') +  '/' + (parseInt(moment().format('YYYY')) - companyTime);
-        const birthdate = moment().format('DD/MM') +  '/' + (parseInt(moment().format('YYYY')) - idade);        
-        console.log({
-            admission_date,
-            birthdate,
-        })
+        const birthdate = moment().format('DD/MM') +  '/' + (parseInt(moment().format('YYYY')) - idade); 
         
-        await api.post('/navers', {
-            job_role: office,
-            admission_date,
-            birthdate,
-            project: projectsParticipated,
-            name,
-            url: avatar,
-        }, config).then(() => {
-            setOpenModalCreate(true);
-        }).catch((error) =>{
-            alert('Erro ao criar o usuário');
-        });
+        if (id){
+            await api.put(`/navers/${id}`, {
+                job_role: office,
+                admission_date,
+                birthdate,
+                project: projectsParticipated,
+                name,
+                url: avatar,
+            }, config).then(() => {
+                setOpenModalUpdate(true);
+            }).catch((error) =>{
+                alert('Erro ao atualizar o usuário');
+            });
+
+        } else {
+            await api.post('/navers', {
+                job_role: office,
+                admission_date,
+                birthdate,
+                project: projectsParticipated,
+                name,
+                url: avatar,
+            }, config).then(() => {
+                setOpenModalCreate(true);
+            }).catch((error) =>{
+                alert('Erro ao criar o usuário');
+            });
+        }
     }
     
     function handleBackHome(){
@@ -97,7 +109,8 @@ const AddNaver: React.FC<AddNaverProps> = ({ id }) => {
 
     function handleCloseModal() {
         setOpenModalCreate(false);
-        history.push('/adicionar-naver');
+        setOpenModalUpdate(false);
+        history.push('/home');
     }
 
     const userCurrent = id  !== '' ? userNavers.find((object: UserNaver) => object.id === id) : null;
@@ -145,9 +158,7 @@ const AddNaver: React.FC<AddNaverProps> = ({ id }) => {
             <main>
                <div className="form-naver">
                     <div className="title">
-                        <button type="button" onClick={handleBackHome}>
-                            <img src={backIcon} alt="Botão de Voltar"/>
-                        </button>
+                        <img src={backIcon} alt="Botão de Voltar" onClick={handleBackHome} />
                         <h1>Adicionar Naver</h1>
                     </div>
                     <form onSubmit={createNaver}>
