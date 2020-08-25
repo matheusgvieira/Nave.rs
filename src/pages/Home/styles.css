@@ -90,3 +90,21 @@
 .navers-container .text p{
     margin-top: 2.4rem;
 }
+
+@media (max-width: 1330px){
+    .navers-container .navers{
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-gap: 6rem;
+        margin-top: 2rem;
+    }
+}
+
+@media (max-width: 928px){
+    .navers-container .navers{
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-gap: 6rem;
+        margin-top: 2rem;
+    }
+}

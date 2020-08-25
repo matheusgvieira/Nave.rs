@@ -19,11 +19,7 @@ export default function Login() {
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
-        console.log({
-            email,
-            password,
-        })
-        
+                
        await api.post('/users/login', { 
             email, 
             password,

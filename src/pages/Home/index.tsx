@@ -55,11 +55,13 @@ const Home: React.FC<HomeProps> = ({ modalKey, toggleModal, id, UserNaver }) => 
     const [userNavers, setUserNavers] = useState<UserNaver[]>([]);
     const [openModalDelete, setOpenModalDelete] = useState<boolean>(false);
     const user:User = JSON.parse(localStorage.getItem('user')!); 
+    
+    const configToken = {
+        headers: { Authorization: `Bearer ${user.token}` }
+    }    
 
-    useEffect(() => {
-        api.get('/navers', {
-            headers: { Authorization: `Bearer ${user.token}` }
-        })
+    useEffect(() => {     
+        api.get('/navers', configToken)
         .then((response) => {
             setUserNavers(response.data)
           })
@@ -87,10 +89,6 @@ const Home: React.FC<HomeProps> = ({ modalKey, toggleModal, id, UserNaver }) => 
         .catch(() => {
             alert('Erro ao deletar o Naver');
         })
-    }
-
-    function handleCloseModal() {
-        toggleModal(false,'');
     }
     
     function handleCloseModalDelete() {
@@ -144,7 +142,7 @@ const Home: React.FC<HomeProps> = ({ modalKey, toggleModal, id, UserNaver }) => 
                                     <p>{userClicked?.project}</p>
                                 </div>
                                 <div className="close-button">
-                                    <img src={closeIcon} alt="Fechar" onClick={handleCloseModal} />
+                                    <img src={closeIcon} alt="Fechar" onClick={() => toggleModal(false,'')} />
                                 </div>
                             </div>
 

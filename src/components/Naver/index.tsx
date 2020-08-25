@@ -9,7 +9,6 @@ import trashIcon from '../../assets/images/icons/trash.svg';
 import editIcon from '../../assets/images/icons/edit.svg';
 
 import './styles.css';
-import api from '../../services/api';
 import { useHistory } from 'react-router-dom';
 
 interface UserNaver {
@@ -49,33 +48,32 @@ const Naver: React.FC<NaverProps> = ({
     setModalQuestion,
  }) => { 
 
-    const user:User = JSON.parse(localStorage.getItem('user')!);
     const history = useHistory(); 
-
-    function handleOpenModal(){
-        toggleModal(true, UserNaver.id);
-    }
 
     function handleEditNaver(){
         toggleModal(false, UserNaver.id);
         history.push('/adicionar-naver');
     }
 
-    function handleDeleteNaver(){
-        setModalQuestion({ modal: true, userId: UserNaver.id});        
-    }
-
     return (
         <div className="naver-container">
             <div className="img-naver">
-                <img src={UserNaver.url} alt="Naver" onClick={handleOpenModal}/>
+                <img 
+                    src={UserNaver.url} 
+                    alt="Naver" 
+                    onClick={() => toggleModal(true, UserNaver.id)}
+                />
             </div>
             <div className="description">
                 <strong>{UserNaver.name}</strong>
                 <p>{UserNaver.job_role}</p>
             </div>
             <div className="icons">
-                <img src={trashIcon} alt="Excluir" onClick={handleDeleteNaver} />
+                <img 
+                    src={trashIcon} 
+                    alt="Excluir" 
+                    onClick={() => setModalQuestion({ modal: true, userId: UserNaver.id})} 
+                />
                 <img src={editIcon} alt="Editar" onClick={handleEditNaver} />
             </div>
         </div>

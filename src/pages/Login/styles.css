@@ -12,7 +12,8 @@
 }
 
 .container-login main form {
-    width: 35%;
+    min-width: 45rem;
+    width: 35vw;
     padding: 4rem 3.2rem;
     display: flex;
     justify-content: center;

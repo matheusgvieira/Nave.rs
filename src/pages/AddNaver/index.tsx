@@ -53,10 +53,12 @@ const AddNaver: React.FC<AddNaverProps> = ({ id }) => {
     
     const history = useHistory();
 
+    const configToken = {
+        headers: { Authorization: `Bearer ${user.token}` }
+    } 
+
     useEffect(() => {
-        api.get('/navers', {
-            headers: { Authorization: `Bearer ${user.token}` }
-        })
+        api.get('/navers', configToken)
         .then((response) => {
             setUserNavers(response.data)
           })
@@ -101,10 +103,6 @@ const AddNaver: React.FC<AddNaverProps> = ({ id }) => {
                 alert('Erro ao criar o usuário');
             });
         }
-    }
-    
-    function handleBackHome(){
-        history.push('/home');
     }
 
     function handleCloseModal() {
@@ -158,7 +156,7 @@ const AddNaver: React.FC<AddNaverProps> = ({ id }) => {
             <main>
                <div className="form-naver">
                     <div className="title">
-                        <img src={backIcon} alt="Botão de Voltar" onClick={handleBackHome} />
+                        <img src={backIcon} alt="Botão de Voltar" onClick={() => history.push('/home')} />
                         <h1>Adicionar Naver</h1>
                     </div>
                     <form onSubmit={createNaver}>
@@ -202,7 +200,8 @@ const AddNaver: React.FC<AddNaverProps> = ({ id }) => {
                                 label="URL da foto do naver" 
                                 name="avatar"
                                 placeholder="URL da foto do naver"
-                                onChange={e => setAvatar(e.target.value)}  
+                                onChange={e => setAvatar(e.target.value)}
+                                defaultValue={userCurrent?.url}   
                             />
                         </div>
                         <div className="button-container">
